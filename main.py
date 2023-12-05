@@ -1,4 +1,5 @@
 from collections import Counter
+from pprint import pprint
 import random
 import string
 import numpy as np
@@ -43,7 +44,7 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
 
     hash_to_tile = {}
     tile_hash_to_frequencies = {}
-    frequencies = []
+    tile_frequency_and_top_left = []
 
     for tile in tiles_all:
         _hash = hash(tuple(map(tuple, np.vstack(tile.T))))
@@ -55,9 +56,11 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
             tile_hash_to_frequencies[_hash] += 1
 
     for _hash, tile in hash_to_tile.items():
-        frequencies.append((tile, tile_hash_to_frequencies[_hash]))
+        tile_frequency_and_top_left.append({"tile": tile, "frequency": tile_hash_to_frequencies[_hash], "top_left": tile[0][0]})
 
-    return tiles_all, tile_hash_to_frequencies
+    # pprint(tile_frequency_and_top_left)
+
+    return tiles_all
 
 
 
@@ -66,4 +69,4 @@ with Image.open("tile.png") as im:
     tiles = wfc_pre_process_image(im, 3)
     for im in tiles:
         imm = Image.fromarray(im)
-        imm.save("images/" + ''.join(random.choice(string.ascii_lowercase) for _ in range(10)) + ".png")
+        # imm.save("images/" + ''.join(random.choice(string.ascii_lowercase) for _ in range(10)) + ".png")
