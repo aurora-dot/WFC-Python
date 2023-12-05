@@ -115,7 +115,7 @@ def wfc_post_process_image(tile_index_grid, top_left_pixel_of_each_tile):
     pass
 
 def wfc_image(image: Image, tile_size: int, output_size: (int, int)) -> Image:
-    adjacency_rules, frequency_hints, top_left_pixel_of_each_tile = wfc_pre_process_image(image, tile_size);
+    unique_tiles, adjacency_rules, frequency_hints, top_left_pixel_of_each_tile = wfc_pre_process_image(image, tile_size)
     tile_index_grid = wfc_core(adjacency_rules, frequency_hints, output_size)
     return wfc_post_process_image(tile_index_grid, top_left_pixel_of_each_tile)
 
