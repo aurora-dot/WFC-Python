@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "wfc-python"
+version = "0.1.0"
+description = "Wave Function Collapse Python implimentation"
+authors = ["E <e@pastel.codes>"]
+readme = "README.md"
+packages = [{include = "wfc_python"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
