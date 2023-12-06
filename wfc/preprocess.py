@@ -1,16 +1,16 @@
-
-from collections import Counter
 from copy import deepcopy
 from enum import Enum
-from pprint import pprint
+
 import numpy as np
 from PIL import Image
+
 
 class direction(Enum):
     LEFT = 0
     RIGHT = 0
     UP = 0
     DOWN = 0
+
 
 def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
     tiles = []
@@ -23,12 +23,16 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
             for xx in range(tile_size):
                 sub_arr = []
                 for yy in range(tile_size):
-                    sub_arr.append(data[(x + xx) % input_image.size[0]][(y + yy)  % input_image.size[1]])
+                    sub_arr.append(
+                        data[(x + xx) % input_image.size[0]][
+                            (y + yy) % input_image.size[1]
+                        ]
+                    )
                 arr.append(sub_arr)
             tiles.append(np.asarray(arr))
 
     # print("normal: ", len(tiles))
-    
+
     for tile in tiles:
         flipped_tile = np.fliplr(tile)
 
@@ -37,7 +41,7 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
 
         normal_rotations = [tile]
         flipped_rotations = [flipped_tile]
-    
+
         for _ in range(3):
             rotated = np.rot90(rotated)
             normal_rotations.append(rotated)
@@ -71,7 +75,7 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
         tile_top_left[i] = tile[0][0]
 
     # print(unique_tiles)
-    
+
     adjacency_rules = []
     for i, i_tile in unique_tiles.items():
         for j, j_tile in unique_tiles.items():
@@ -81,19 +85,21 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
 
     return unique_tiles, adjacency_rules, tile_frequencies, tile_top_left
 
+
 def are_arrays_equal(arr1, arr2):
     return np.array_equal(arr1, arr2)
+
 
 def compatible(tile_one, tile_two, _direction):
     match _direction:
         case direction.LEFT:
-            tile_one_left  = [[row[:2] for row in layer] for layer in tile_one]
+            tile_one_left = [[row[:2] for row in layer] for layer in tile_one]
             tile_two_right = [[row[-2:] for row in layer] for layer in tile_two]
-            return are_arrays_equal(tile_one_left,tile_two_right)
+            return are_arrays_equal(tile_one_left, tile_two_right)
 
         case direction.RIGHT:
             tile_one_right = [[row[-2:] for row in layer] for layer in tile_one]
-            tile_two_left =  [[row[:2] for row in layer] for layer in tile_two]
+            tile_two_left = [[row[:2] for row in layer] for layer in tile_two]
             return are_arrays_equal(tile_one_right, tile_two_left)
 
         case direction.UP:
