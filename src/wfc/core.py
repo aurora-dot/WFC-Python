@@ -1,7 +1,5 @@
 from operator import mul
 
-from numpy import inf
-
 
 class CoreCell:
     possible = []  # List of bool
@@ -9,7 +7,7 @@ class CoreCell:
 
 class CoreState:
     grid = []  # 2D grid, corresponds to the output grid
-    remaining_uncollapsed_cells = inf
+    remaining_uncollapsed_cells = None
     adjacency_rules = None
     frequency_hints = None
 
