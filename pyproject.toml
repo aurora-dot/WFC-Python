@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Wave Function Collapse Python implimentation"
 authors = ["E <e@pastel.codes>"]
 readme = "README.md"
-packages = [{ include = "wfc" }]
+packages = [{ include = "wfc", from = "src" }]
 
 [tool.poetry.scripts]
 wfc = "wfc.main:main"
