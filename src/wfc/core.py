@@ -1,3 +1,6 @@
+from math import log2
+
+
 class CoreData:
     adjacency_rules = None
     frequency_hints = None
@@ -26,13 +29,19 @@ class CoreCell:
 
     def total_possible_tile_frequency(self, freq_hint: dict):
         total = 0
-        for tile_index, is_possible in self.possible.keys():
+        for tile_index, is_possible in self.possible.items():
             if is_possible:
                 total += self.core_data.freq_hint[tile_index]
 
     def entropy(self, freq_hint) -> float:
         total_weight = self.total_possible_tile_frequency(freq_hint)
-        sum_of_weight_log_weight = 0
+        sum_of_weight_log_weight = sum(
+            [
+                log2(freq_hint[tile_index]) if is_possible else 0
+                for tile_index, is_possible in self.possible.items()
+            ]
+        )
+        return log2(total_weight) - (sum_of_weight_log_weight / total_weight)
 
     def __init__(self, input_core_data) -> None:
         self.core_data = input_core_data
@@ -68,4 +77,4 @@ class CoreState:
 
 def wfc_core(adjacency_rules, frequency_hints, output_size):
     core_data = CoreData(adjacency_rules, frequency_hints, output_size)
-    CoreState(core_data)
+    core_state = CoreState(core_data)
