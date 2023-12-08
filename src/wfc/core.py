@@ -27,21 +27,26 @@ class CoreCell:
     possible = {}  # dic of int:bool
     core_data = None
 
+    sum_of_possible_tile_weights = None
+    sum_of_possible_tile_weight_log_weights = None
+
     def total_possible_tile_frequency(self, freq_hint: dict):
         total = 0
         for tile_index, is_possible in self.possible.items():
             if is_possible:
-                total += self.core_data.freq_hint[tile_index]
+                total += freq_hint[tile_index]
 
-    def entropy(self, freq_hint) -> float:
-        total_weight = self.total_possible_tile_frequency(freq_hint)
-        sum_of_weight_log_weight = sum(
-            [
-                log2(freq_hint[tile_index]) if is_possible else 0
-                for tile_index, is_possible in self.possible.items()
-            ]
+    def remove_tile(self, tile_index, freq_hint):
+        self.possible[tile_index] = False
+        freq = freq_hint[tile_index]
+
+        self.sum_of_possible_tile_weights -= freq
+        self.sum_of_possible_tile_weight_log_weights -= freq * log2(freq)
+
+    def entropy(self) -> float:
+        return log2(self.sum_of_possible_tile_weights) - (
+            self.sum_of_possible_weight_log_weights / self.sum_of_possible_tile_weights
         )
-        return log2(total_weight) - (sum_of_weight_log_weight / total_weight)
 
     def __init__(self, input_core_data) -> None:
         self.core_data = input_core_data
