@@ -1,3 +1,5 @@
+import heapq
+import random
 from math import log2
 
 
@@ -27,8 +29,12 @@ class CoreCell:
     possible = {}  # dic of int:bool
     core_data = None
 
+    is_collapsed = False
+
     sum_of_possible_tile_weights = None
     sum_of_possible_tile_weight_log_weights = None
+
+    entropy_noise = random.uniform(0.00001, 0.009)
 
     def total_possible_tile_frequency(self, freq_hint: dict):
         total = 0
@@ -44,9 +50,10 @@ class CoreCell:
         self.sum_of_possible_tile_weight_log_weights -= freq * log2(freq)
 
     def entropy(self) -> float:
-        return log2(self.sum_of_possible_tile_weights) - (
+        entropy = log2(self.sum_of_possible_tile_weights) - (
             self.sum_of_possible_weight_log_weights / self.sum_of_possible_tile_weights
         )
+        return entropy + self.entropy_noise
 
     def __init__(self, input_core_data) -> None:
         self.core_data = input_core_data
@@ -54,14 +61,34 @@ class CoreCell:
             self.possible[tile] = True
 
 
+class EntropyCoord:
+    entropy: float = None
+    coord: tuple = None
+
+    def __lt__(self, other):
+        return self.entropy < other.entropy
+
+
 class CoreState:
     core_data = None
+    entropy_heap = []
 
     def __init__(self, input_core_data) -> None:
         self.core_data = input_core_data
 
     def relative_frequency(self, tile_index) -> int:
         return self.frequency_hints[tile_index]
+
+    def choose_next_cell(self) -> tuple:
+        while len(self.entropy_heap) != 0:
+            entropy_coord = heapq.heappop(self.entropy_heap)
+            cell: CoreCell = self.core_data.grid[entropy_coord.coord[0]][
+                entropy_coord.coord[1]
+            ]
+            if not cell.is_collapsed:
+                return entropy_coord.coord
+
+        raise ("entropy_heap is empty, but there are still uncollapsed cells")
 
     def choose_next_cell(self) -> tuple:
         pass
