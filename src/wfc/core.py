@@ -105,33 +105,14 @@ class CoreState:
 
         raise ("entropy_heap is empty, but there are still uncollapsed cells")
 
-    # fn collapse_cell_at(&mut self, coord: Coord2D) {
-    #         let mut cell = self.grid.get(coord);
-    #         let tile_index_to_lock_in = cell.choose_tile_index(&self.frequency_hints);
-
-    #         cell.is_collapsed = true;
-
-    #         // remove all other possibilities
-    #         for (tile_index, possible) in cell.possible.iter_mut().enumerate() {
-    #             if tile_index != tile_index_to_lock_in {
-    #                 *possible = false;
-    #                 // We _could_ call
-    #                 // `cell.remove_tile(tile_index, &self.frequency_hints)` here
-    #                 // instead of explicitly setting `possible` to false, however
-    #                 // there's no need to update the cached sums of weights for this
-    #                 // cell. It's collapsed now, so we no longer care about its
-    #                 // entropy.
-    #             }
-    #         }
-    #     }
-
     def collapse_cell_at(self, coord):
         cell: CoreCell = self.core_data.grid[coord[0]][coord[1]]
         tile_index_to_lock_in = cell.choose_tile_index(self.core_data.frequency_hints)
         cell.is_collapsed = True
 
-        for tile_index, is_possible in cell.possible.items():
-            print()
+        for tile_index in cell.possible.keys():
+            if tile_index != tile_index_to_lock_in:
+                cell.possible[tile_index] = False
 
     def propagate(self):
         pass
