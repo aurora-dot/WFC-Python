@@ -52,7 +52,7 @@ class CoreCell:
     def choose_tile_index(self, frequency_hints):
         remaining = random.randint(0, self.sum_of_possible_tile_weights)
 
-        for possible_tile_index in self.possible_tile_iter():
+        for possible_tile_index in self.possible.keys():
             weight = frequency_hints[possible_tile_index]
 
             if remaining >= weight:
@@ -85,7 +85,7 @@ class EntropyCoord:
 
 
 class CoreState:
-    core_data = None
+    core_data: CoreData = None
     entropy_heap = []
 
     def __init__(self, input_core_data) -> None:
@@ -105,11 +105,33 @@ class CoreState:
 
         raise ("entropy_heap is empty, but there are still uncollapsed cells")
 
-    def choose_next_cell(self) -> tuple:
-        pass
+    # fn collapse_cell_at(&mut self, coord: Coord2D) {
+    #         let mut cell = self.grid.get(coord);
+    #         let tile_index_to_lock_in = cell.choose_tile_index(&self.frequency_hints);
+
+    #         cell.is_collapsed = true;
+
+    #         // remove all other possibilities
+    #         for (tile_index, possible) in cell.possible.iter_mut().enumerate() {
+    #             if tile_index != tile_index_to_lock_in {
+    #                 *possible = false;
+    #                 // We _could_ call
+    #                 // `cell.remove_tile(tile_index, &self.frequency_hints)` here
+    #                 // instead of explicitly setting `possible` to false, however
+    #                 // there's no need to update the cached sums of weights for this
+    #                 // cell. It's collapsed now, so we no longer care about its
+    #                 // entropy.
+    #             }
+    #         }
+    #     }
 
     def collapse_cell_at(self, coord):
-        pass
+        cell: CoreCell = self.core_data.grid[coord[0]][coord[1]]
+        tile_index_to_lock_in = cell.choose_tile_index(self.core_data.frequency_hints)
+        cell.is_collapsed = True
+
+        for tile_index, is_possible in cell.possible.items():
+            print()
 
     def propagate(self):
         pass
