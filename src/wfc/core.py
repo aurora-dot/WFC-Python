@@ -49,6 +49,21 @@ class CoreCell:
         self.sum_of_possible_tile_weights -= freq
         self.sum_of_possible_tile_weight_log_weights -= freq * log2(freq)
 
+    def choose_tile_index(self, frequency_hints):
+        remaining = random.randint(0, self.sum_of_possible_tile_weights)
+
+        for possible_tile_index in self.possible_tile_iter():
+            weight = frequency_hints[possible_tile_index]
+
+            if remaining >= weight:
+                remaining -= weight
+            else:
+                return possible_tile_index
+
+        raise (
+            "sum_of_possible_weights was inconsistent with possible_tile_iter and frequency_hints"
+        )
+
     def entropy(self) -> float:
         entropy = log2(self.sum_of_possible_tile_weights) - (
             self.sum_of_possible_weight_log_weights / self.sum_of_possible_tile_weights
