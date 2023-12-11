@@ -150,7 +150,75 @@ class CoreState:
                 self.tile_removals.append(RemovalUpdate(tile_index, coord))
 
     def propagate(self):
-        pass
+        while len(self.tile_removals) > 0:
+            removal_update = self.tile_removals.pop()
+            for direction in ALL_DIRECTIONS:
+                # neighbour_coord = removal_update.coord.neighbour(direction)
+                # neighbour_cell = self.grid.get_mut(neighbour_coord)
+                pass
+
+        #         while let Some(removal_update) = self.tile_removals.pop() {
+        #             // at some point in the recent past, removal_update.tile_index was
+        #             // removed as a candidate for the tile in the cell at
+        #             // removal_update.coord
+
+        #             for &direction in ALL_DIRECTIONS.iter() {
+        #                 // propagate the effect to the neighbour in each direction
+        #                 let neighbour_coord = removal_update.coord.neighbour(direction);
+        #                 let neighbour_cell = self.grid.get_mut(neighbour_coord);
+
+        #                 // iterate over all the tiles which may appear in the cell one
+        #                 // space in `direction` from a cell containing
+        #                 // `removal_update.tile_index`
+        #                 for compatible_tile in self.adjacency_rules.compatible_tiles(
+        #                     removal_update.tile_index,
+        #                     direction,
+        #                 ) {
+
+        #                     // relative to `neighbour_cell`, the cell at
+        #                     // `removal_update.coord` is in the opposite direction to
+        #                     // `direction`
+        #                     let opposite_direction = opposite(direction);
+
+        #                     // look up the count of enablers for this tile
+        #                     let enabler_counts = &mut neighbour_cell
+        #                         .tile_enabler_counts[compatible_tile];
+
+        #                     // check if we're about to decrement this to 0
+        #                     if enabler_counts.by_direction[direction] == 1 {
+
+        #                         // if there is a zero count in another direction,
+        #                         // the potential tile has already been removed,
+        #                         // and we want to avoid removing it again
+        #                         if !enabler_counts.contains_any_zero_count() {
+        #                             // remove the possibility
+        #                             neighbour_cell.remove_tile(
+        #                                 compatible_tile,
+        #                                 &self.frequency_hints,
+        #                             );
+        #                             // check for contradiction
+        #                             if neighbour_cell.has_no_possible_tiles() {
+        #                                 // CONTRADICTION!!!
+        #                             }
+        #                             // this probably changed the cell's entropy
+        #                             self.entropy_heap.push(EntropyCoord {
+        #                                 entropy: neighbour_cell.entropy(),
+        #                                 coord: neighbour_coord,
+        #                             });
+        #                             // add the update to the stack
+        #                             self.tile_removals.push(RemovalUpdate {
+        #                                 tile_index: compatible_tile,
+        #                                 coord: neoighbour_coord,
+        #                             });
+        #                         }
+        #                     }
+
+        #                     enabler_counts.by_direction[direction] -= 1;
+        #                 }
+        #             }
+        #         }
+        #     }
+        # }
 
     def run(self):
         while self.remaining_uncollapsed_cells > 0:
