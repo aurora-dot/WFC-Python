@@ -6,10 +6,10 @@ from PIL import Image
 
 
 class direction(Enum):
-    LEFT = 0
-    RIGHT = 0
     UP = 0
-    DOWN = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
 
 
 def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:

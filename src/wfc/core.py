@@ -3,6 +3,19 @@ import random
 from math import log2
 
 
+class EntropyCoord:
+    entropy: float = None
+    coord: tuple = None
+
+    def __lt__(self, other):
+        return self.entropy < other.entropy
+
+
+class RemovalUpdate:
+    tile_index: int = None
+    coord: tuple = None
+
+
 class CoreData:
     adjacency_rules = None
     frequency_hints = None
@@ -76,17 +89,10 @@ class CoreCell:
             self.possible[tile] = True
 
 
-class EntropyCoord:
-    entropy: float = None
-    coord: tuple = None
-
-    def __lt__(self, other):
-        return self.entropy < other.entropy
-
-
 class CoreState:
     core_data: CoreData = None
     entropy_heap = []
+    tile_removals = []
 
     def __init__(self, input_core_data) -> None:
         self.core_data = input_core_data
@@ -113,6 +119,7 @@ class CoreState:
         for tile_index in cell.possible.keys():
             if tile_index != tile_index_to_lock_in:
                 cell.possible[tile_index] = False
+                self.tile_removals.append(RemovalUpdate(tile_index, coord))
 
     def propagate(self):
         pass
