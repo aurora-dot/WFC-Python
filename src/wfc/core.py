@@ -1,11 +1,27 @@
 import heapq
 import random
+from enum import Enum
 from math import log2
+
+
+class Direction(Enum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+
+
+NUM_DIRECTIONS = 4
+ALL_DIRECTIONS = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
 
 
 class EntropyCoord:
     entropy: float = None
     coord: tuple = None
+
+    def __init__(self, entropy, coord) -> None:
+        self.entropy = entropy
+        self.coord = coord
 
     def __lt__(self, other):
         return self.entropy < other.entropy
@@ -14,6 +30,17 @@ class EntropyCoord:
 class RemovalUpdate:
     tile_index: int = None
     coord: tuple = None
+
+    def __init__(self, tile_index, coord) -> None:
+        self.tile_index = tile_index
+        self.coord = coord
+
+
+class TileEnablerCount:
+    by_direction = 4
+
+    def __init__(self, by_direction) -> None:
+        self.by_direction = by_direction
 
 
 class CoreData:
@@ -93,6 +120,7 @@ class CoreState:
     core_data: CoreData = None
     entropy_heap = []
     tile_removals = []
+    tile_enabler_counts = {}
 
     def __init__(self, input_core_data) -> None:
         self.core_data = input_core_data
@@ -130,6 +158,20 @@ class CoreState:
             self.collapse_cell_at(next_coord)
             self.propagate()
             self.remaining_uncollapsed_cells -= 1
+
+
+def initial_tile_enabler_counts(num_tiles: int, adjacency_rules: dict) -> tuple:
+    ret = []
+
+    for tile_a in range(num_tiles):
+        counts = TileEnablerCount([0, 0, 0, 0])
+
+        for direction in ALL_DIRECTIONS:
+            for tile_b in adjacency_rules[tile_a][direction]:
+                counts.by_direction[direction] += 1
+
+            ret.append(counts)
+    return ret
 
 
 def wfc_core(adjacency_rules, frequency_hints, output_size):
