@@ -76,12 +76,16 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
 
     # print(unique_tiles)
 
-    adjacency_rules = []
+    adjacency_rules = {}
     for i, i_tile in unique_tiles.items():
         for j, j_tile in unique_tiles.items():
             for d in [direction.LEFT, direction.RIGHT, direction.UP, direction.DOWN]:
                 if compatible(i_tile, j_tile, d):
-                    adjacency_rules.append((i, j, d))
+                    if i not in adjacency_rules:
+                        adjacency_rules[i] = {}
+                    if d not in adjacency_rules[i]:
+                        adjacency_rules[i][d] = []
+                    adjacency_rules[i][d].append(j)
 
     return unique_tiles, adjacency_rules, tile_frequencies, tile_top_left
 
