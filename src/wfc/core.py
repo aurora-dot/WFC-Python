@@ -75,7 +75,7 @@ class Coord:
                 else:
                     return (self.coord[0] - 1, self.coord[1])
             case Direction.DOWN:
-                if self.coord[0] == len(self.core_data.grid):
+                if self.coord[0] + 1 >= len(self.core_data.grid):
                     return None
                 else:
                     return (self.coord[0] + 1, self.coord[1])
@@ -85,7 +85,7 @@ class Coord:
                 else:
                     return (self.coord[0], self.coord[1] - 1)
             case Direction.RIGHT:
-                if self.coord[1] == len(self.core_data.grid[0]):
+                if self.coord[1] + 1 >= len(self.core_data.grid[0]):
                     return None
                 else:
                     return (self.coord[0], self.coord[1] + 1)
@@ -123,6 +123,9 @@ class CoreCell:
     entropy_noise = random.uniform(0.0000001, 0)
 
     tile_enabler_counts = {}
+
+    def __str__(self) -> str:
+        return self.possible
 
     def total_possible_tile_frequency(self, freq_hint: dict):
         total = 0
@@ -232,39 +235,45 @@ class CoreState:
                         neighbour_coord[1]
                     ]
 
-                    for compatible_tile in self.core_data.adjacency_rules[
-                        removal_update.tile_index
-                    ][direction]:
-                        opposite_direction = OPPOSITE[direction]
-                        print(neighbour_cell.tile_enabler_counts)
-                        enabler_counts = neighbour_cell.tile_enabler_counts[
-                            compatible_tile
-                        ]
-                        if enabler_counts[direction.value] == 1:
-                            if 0 not in enabler_counts:
-                                neighbour_cell.remove_tile(
-                                    compatible_tile, self.core_data.frequency_hints
-                                )
-                                if len(neighbour_cell.possible) == 0:
-                                    raise ContradictionException()
-
-                                heapq.heappush(
-                                    self.entropy_heap,
-                                    EntropyCoord(
-                                        neighbour_cell.entropy(),
-                                        neighbour_coord,
-                                        self.core_data,
-                                    ),
-                                )
-                                self.tile_removals.append(
-                                    RemovalUpdate(
-                                        compatible_tile, neighbour_coord, self.core_data
+                    if (
+                        direction
+                        in self.core_data.adjacency_rules[removal_update.tile_index]
+                    ):
+                        for compatible_tile in self.core_data.adjacency_rules[
+                            removal_update.tile_index
+                        ][direction]:
+                            opposite_direction = OPPOSITE[direction]
+                            # print(self.core_data.grid[neighbour_coord[0]])
+                            enabler_counts = neighbour_cell.tile_enabler_counts[
+                                compatible_tile
+                            ]
+                            if enabler_counts[direction.value] == 1:
+                                if 0 not in enabler_counts:
+                                    neighbour_cell.remove_tile(
+                                        compatible_tile, self.core_data.frequency_hints
                                     )
-                                )
+                                    if len(neighbour_cell.possible) == 0:
+                                        raise ContradictionException()
 
-                        neighbour_cell.tile_enabler_counts[compatible_tile][
-                            direction.value
-                        ] -= 1
+                                    heapq.heappush(
+                                        self.entropy_heap,
+                                        EntropyCoord(
+                                            neighbour_cell.entropy(),
+                                            neighbour_coord,
+                                            self.core_data,
+                                        ),
+                                    )
+                                    self.tile_removals.append(
+                                        RemovalUpdate(
+                                            compatible_tile,
+                                            neighbour_coord,
+                                            self.core_data,
+                                        )
+                                    )
+
+                            neighbour_cell.tile_enabler_counts[compatible_tile][
+                                direction.value
+                            ] -= 1
 
     def run(self):
         while self.core_data.remaining_uncollapsed_cells > 0:
@@ -281,15 +290,22 @@ def wfc_core(adjacency_rules, frequency_hints, output_size):
 
     core_state.run()
 
+    for x in range(len(core_data.grid)):
+        for y in range(len(core_data.grid[x])):
+            print(core_data.grid[x][y].possible)
+
+    input()
+
     output_grid = deepcopy(core_data.grid)
-    for x in range(len(core_state.grid)):
-        for y in range(len(core_state.grid[x])):
+    for x in range(len(core_data.grid)):
+        for y in range(len(core_data.grid[x])):
             possible_tile_indexes = [
                 index
-                for index, possible in core_state.grid[x][y].possible.items()
+                for index, possible in core_data.grid[x][y].possible.items()
                 if possible
             ]
             if len(possible_tile_indexes) != 1:
+                print(possible_tile_indexes)
                 raise Exception()
 
             tile_index = possible_tile_indexes[0]
