@@ -21,17 +21,19 @@ OPPOSITE = {
 }
 
 
-def initial_tile_enabler_counts(tiles: dict, adjacency_rules: dict) -> tuple:
+def initial_tile_enabler_counts(adjacency_rules: dict) -> tuple:
     ret = {}
 
-    for tile_a in tiles:
-        counts = TileEnablerCount([0, 0, 0, 0])
+    for tile_a in adjacency_rules:
+        counts = [0, 0, 0, 0]
 
         for direction in ALL_DIRECTIONS:
-            for tile_b in adjacency_rules[tile_a][direction]:
-                counts[direction] += 1
+            if direction in adjacency_rules[tile_a]:
+                for tile_b in adjacency_rules[tile_a][direction]:
+                    counts[direction.value] += 1
 
             ret[tile_a] = counts
+
     return ret
 
 
@@ -109,13 +111,6 @@ class RemovalUpdate(Coord):
         self.tile_index = tile_index
 
 
-class TileEnablerCount:
-    by_direction = 4
-
-    def __init__(self, by_direction) -> None:
-        self.by_direction = by_direction
-
-
 class CoreCell:
     possible = {}  # dic of int:bool
     core_data = None
@@ -176,6 +171,10 @@ class CoreCell:
             [i * log2(i) for i in self.core_data.frequency_hints.values()]
         )
 
+        self.tile_enabler_counts = initial_tile_enabler_counts(
+            self.core_data.adjacency_rules
+        )
+
 
 class CoreState:
     core_data: CoreData = None
@@ -233,16 +232,15 @@ class CoreState:
                         neighbour_coord[1]
                     ]
 
-                    print(self.core_data.adjacency_rules[removal_update.tile_index])
-
                     for compatible_tile in self.core_data.adjacency_rules[
                         removal_update.tile_index
                     ][direction]:
                         opposite_direction = OPPOSITE[direction]
+                        print(neighbour_cell.tile_enabler_counts)
                         enabler_counts = neighbour_cell.tile_enabler_counts[
                             compatible_tile
                         ]
-                        if enabler_counts[direction] == 1:
+                        if enabler_counts[direction.value] == 1:
                             if 0 not in enabler_counts:
                                 neighbour_cell.remove_tile(
                                     compatible_tile, self.core_data.frequency_hints
@@ -265,7 +263,7 @@ class CoreState:
                                 )
 
                         neighbour_cell.tile_enabler_counts[compatible_tile][
-                            direction
+                            direction.value
                         ] -= 1
 
     def run(self):
