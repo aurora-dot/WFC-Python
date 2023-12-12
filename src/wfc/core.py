@@ -57,10 +57,10 @@ class CoreData:
 
         self.remaining_uncollapsed_cells = self.output_size[0] * self.output_size[1]
 
-        for x in self.output_size[0]:
+        for x in range(self.output_size[0]):
             self.grid.append([])
-            for _ in self.output_size[1]:
-                self.grid[x].append(CoreCell(self.frequency_hints))
+            for _ in range(self.output_size[1]):
+                self.grid[x].append(CoreCell(self))
 
 
 class Coord:
@@ -171,7 +171,7 @@ class CoreCell:
 
     def __init__(self, input_core_data) -> None:
         self.core_data: CoreData = input_core_data
-        for tile in self.core_data.keys():
+        for tile in self.core_data.frequency_hints.keys():
             self.possible[tile] = True
 
         self.sum_of_possible_tile_weights = sum(
@@ -252,11 +252,11 @@ class CoreState:
                     neighbour_cell.tile_enabler_counts[compatible_tile][direction] -= 1
 
     def run(self):
-        while self.remaining_uncollapsed_cells > 0:
+        while self.core_data.remaining_uncollapsed_cells > 0:
             next_coord = self.choose_next_cell()
             self.collapse_cell_at(next_coord)
             self.propagate()
-            self.remaining_uncollapsed_cells -= 1
+            self.core_data.remaining_uncollapsed_cells -= 1
 
 
 def wfc_core(adjacency_rules, frequency_hints, output_size):
