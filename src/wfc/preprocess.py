@@ -1,15 +1,9 @@
 from copy import deepcopy
-from enum import Enum
 
 import numpy as np
 from PIL import Image
 
-
-class direction(Enum):
-    UP = 0
-    DOWN = 1
-    LEFT = 2
-    RIGHT = 3
+from wfc.shared import Direction
 
 
 def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
@@ -73,7 +67,7 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
     adjacency_rules = {}
     for i, i_tile in unique_tiles.items():
         for j, j_tile in unique_tiles.items():
-            for d in [direction.LEFT, direction.RIGHT, direction.UP, direction.DOWN]:
+            for d in [Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN]:
                 if compatible(i_tile, j_tile, d):
                     if i not in adjacency_rules:
                         adjacency_rules[i] = {}
@@ -90,22 +84,22 @@ def are_arrays_equal(arr1, arr2):
 
 def compatible(tile_one, tile_two, _direction):
     match _direction:
-        case direction.LEFT:
+        case Direction.LEFT:
             tile_one_left = [[row[:2] for row in layer] for layer in tile_one]
             tile_two_right = [[row[-2:] for row in layer] for layer in tile_two]
             return are_arrays_equal(tile_one_left, tile_two_right)
 
-        case direction.RIGHT:
+        case Direction.RIGHT:
             tile_one_right = [[row[-2:] for row in layer] for layer in tile_one]
             tile_two_left = [[row[:2] for row in layer] for layer in tile_two]
             return are_arrays_equal(tile_one_right, tile_two_left)
 
-        case direction.UP:
+        case Direction.UP:
             tile_one_up = [layer[:2] for layer in tile_one]
             tile_two_down = [layer[-2:] for layer in tile_two]
             return are_arrays_equal(tile_one_up, tile_two_down)
 
-        case direction.DOWN:
+        case Direction.DOWN:
             tile_one_down = [layer[-2:] for layer in tile_one]
             tile_two_up = [layer[:2] for layer in tile_two]
             return are_arrays_equal(tile_one_down, tile_two_up)

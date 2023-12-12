@@ -2,19 +2,13 @@ import heapq
 import random
 from collections import deque
 from copy import deepcopy
-from enum import Enum
 from math import log2
+
+from wfc.shared import Direction
 
 
 class ContradictionException(BaseException):
     pass
-
-
-class Direction(Enum):
-    UP = 0
-    DOWN = 1
-    LEFT = 2
-    RIGHT = 3
 
 
 NUM_DIRECTIONS = 4
@@ -238,6 +232,8 @@ class CoreState:
                     neighbour_cell: CoreCell = self.core_data.grid[neighbour_coord[0]][
                         neighbour_coord[1]
                     ]
+
+                    print(self.core_data.adjacency_rules[removal_update.tile_index])
 
                     for compatible_tile in self.core_data.adjacency_rules[
                         removal_update.tile_index
