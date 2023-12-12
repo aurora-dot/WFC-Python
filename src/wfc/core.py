@@ -1,6 +1,7 @@
 import heapq
 import random
 from collections import deque
+from copy import deepcopy
 from enum import Enum
 from math import log2
 
@@ -169,9 +170,16 @@ class CoreCell:
         return entropy + self.entropy_noise
 
     def __init__(self, input_core_data) -> None:
-        self.core_data = input_core_data
+        self.core_data: CoreData = input_core_data
         for tile in self.core_data.keys():
             self.possible[tile] = True
+
+        self.sum_of_possible_tile_weights = sum(
+            [i for i in self.core_data.frequency_hints.values()]
+        )
+        self.sum_of_possible_tile_weight_log_weights = sum(
+            [i * log2(i) for i in self.core_data.frequency_hints.values()]
+        )
 
 
 class CoreState:
@@ -254,3 +262,21 @@ class CoreState:
 def wfc_core(adjacency_rules, frequency_hints, output_size):
     core_data = CoreData(adjacency_rules, frequency_hints, output_size)
     core_state = CoreState(core_data)
+
+    core_state.run()
+
+    output_grid = deepcopy(core_data.grid)
+    for x in range(len(core_state.grid)):
+        for y in range(len(core_state.grid[x])):
+            possible_tile_indexes = [
+                index
+                for index, possible in core_state.grid[x][y].possible.items()
+                if possible
+            ]
+            if len(possible_tile_indexes) != 1:
+                raise Exception()
+
+            tile_index = possible_tile_indexes[0]
+            output_grid[x][y] = tile_index
+
+    return output_grid
