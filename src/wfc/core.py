@@ -194,6 +194,7 @@ class CoreState:
         return self.frequency_hints[tile_index]
 
     def choose_next_cell(self) -> tuple:
+        print(self.entropy_heap)
         while len(self.entropy_heap) != 0:
             entropy_coord = heapq.heappop(self.entropy_heap)
             cell: CoreCell = self.core_data.grid[entropy_coord.coord[0]][
@@ -237,11 +238,12 @@ class CoreState:
                                 raise ContradictionException()
 
                             heapq.heappush(
+                                self.entropy_heap,
                                 EntropyCoord(
                                     neighbour_cell.entropy(),
                                     neighbour_coord,
                                     self.core_data,
-                                )
+                                ),
                             )
                             self.tile_removals.append(
                                 RemovalUpdate(
