@@ -20,7 +20,8 @@ def main():
     print("running...")
     with Image.open("tile.png") as im:
         im.load()
-        wfc_image(im, 3, (300, 300))
+        gen = wfc_image(im, 3, (300, 300))
+        gen.show()
     print("done!")
 
 
