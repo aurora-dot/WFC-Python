@@ -6,7 +6,7 @@ from enum import Enum
 from math import log2
 
 
-class ContradictionException(Exception):
+class ContradictionException(BaseException):
     pass
 
 
@@ -159,7 +159,7 @@ class CoreCell:
             else:
                 return possible_tile_index
 
-        raise (
+        raise Exception(
             "sum_of_possible_weights was inconsistent with possible_tile_iter and frequency_hints"
         )
 
@@ -202,7 +202,7 @@ class CoreState:
             if not cell.is_collapsed:
                 return entropy_coord.coord
 
-        raise ("entropy_heap is empty, but there are still uncollapsed cells")
+        raise Exception("entropy_heap is empty, but there are still uncollapsed cells")
 
     def collapse_cell_at(self, coord):
         cell: CoreCell = self.core_data.grid[coord[0]][coord[1]]
