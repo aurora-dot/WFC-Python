@@ -31,8 +31,6 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
                 arr.append(sub_arr)
             tiles.append(np.asarray(arr))
 
-    # print("normal: ", len(tiles))
-
     for tile in tiles:
         flipped_tile = np.fliplr(tile)
 
@@ -50,8 +48,6 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
             flipped_rotations.append(rotated_flipped)
 
         tiles_all += normal_rotations + flipped_rotations
-
-    # print("normal, flipped, rotated normal, rotated flipped: ", len(tiles_all))
 
     hash_to_tile = {}
     tile_hash_to_frequencies = {}
@@ -73,8 +69,6 @@ def wfc_pre_process_image(input_image: Image, tile_size: int) -> list:
         unique_tiles[i] = tile
         tile_frequencies[i] = tile_hash_to_frequencies[_hash]
         tile_top_left[i] = tile[0][0]
-
-    # print(unique_tiles)
 
     adjacency_rules = {}
     for i, i_tile in unique_tiles.items():
