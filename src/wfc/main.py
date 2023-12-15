@@ -1,3 +1,5 @@
+import sys
+
 from PIL import Image
 
 from wfc.core import wfc_core
@@ -13,6 +15,7 @@ def wfc_image(image: Image, tile_size: int, output_size: (int, int)) -> Image:
         top_left_pixel_of_each_tile,
     ) = wfc_pre_process_image(image, tile_size)
     tile_index_grid = wfc_core(adjacency_rules, frequency_hints, output_size)
+    sys.exit(0)
     return wfc_post_process_image(tile_index_grid, top_left_pixel_of_each_tile)
 
 
